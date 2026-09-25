@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitStart — Beginner Gym Trainer</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0f0d;
+  --bg2:#111a15;
+  --bg3:#162019;
+  --card:#1a2620;
+  --card2:#1f2e27;
+  --accent:#3ddc84;
+  --accent2:#2ab56a;
+  --accent3:#f5c842;
+  --text:#e8f0eb;
+  --muted:#7a9485;
+  --border:#2a3d32;
+  --red:#f05a5a;
+  --orange:#f09040;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,15,13,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;height:60px;gap:0}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--accent);letter-spacing:-.02em;margin-right:auto}
+.logo span{color:var(--text)}
+.nav-links{display:flex;gap:0}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.85rem;padding:0 1rem;height:60px;display:flex;align-items:center;border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 2rem 4rem;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(61,220,132,.08) 0%,transparent 70%);pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;opacity:.3;pointer-events:none}
+.hero-inner{position:relative;max-width:700px}
+.hero-tag{display:inline-block;background:rgba(61,220,132,.12);color:var(--accent);border:1px solid rgba(61,220,132,.3);border-radius:20px;padding:5px 16px;font-size:.8rem;font-weight:500;letter-spacing:.05em;margin-bottom:1.5rem;text-transform:uppercase}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(2.8rem,7vw,5rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:1.25rem}
+.hero h1 .green{color:var(--accent)}
+.hero p{font-size:1.1rem;color:var(--muted);line-height:1.7;margin-bottom:2.5rem;max-width:500px;margin-left:auto;margin-right:auto}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{padding:13px 28px;border-radius:10px;font-size:.95rem;font-weight:500;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s;border:none;font-family:'DM Sans',sans-serif}
+.btn-primary{background:var(--accent);color:#0a0f0d}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-2px)}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.stats-row{display:flex;gap:2rem;justify-content:center;margin-top:4rem;flex-wrap:wrap}
+.stat{text-align:center}
+.stat .num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:700;color:var(--accent)}
+.stat .lbl{font-size:.8rem;color:var(--muted);margin-top:2px}
+
+/* SECTIONS */
+section{padding:5rem 2rem;max-width:1100px;margin:0 auto}
+.section-tag{font-size:.75rem;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.75rem}
+.section-title{font-family:'Syne',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;letter-spacing:-.02em;margin-bottom:.75rem}
+.section-sub{color:var(--muted);font-size:1rem;line-height:1.7;max-width:560px;margin-bottom:3rem}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem}
+.card2{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:1.25rem}
+
+/* PLAN BUILDER */
+#plan-section .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+.goal-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;cursor:pointer;transition:all .2s}
+.goal-card:hover{border-color:var(--muted)}
+.goal-card.sel{border-color:var(--accent);background:rgba(61,220,132,.07)}
+.goal-card .ico{font-size:1.5rem;margin-bottom:.5rem}
+.goal-card .gname{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:600}
+.goal-card .gsub{font-size:.8rem;color:var(--muted);margin-top:.25rem}
+.time-chips{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap}
+.chip{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 18px;font-size:.85rem;cursor:pointer;color:var(--muted);transition:all .2s;font-family:'DM Sans',sans-serif}
+.chip:hover{border-color:var(--muted);color:var(--text)}
+.chip.sel{background:rgba(61,220,132,.1);border-color:var(--accent);color:var(--accent)}
+.gen-btn{width:100%;padding:14px;background:var(--accent);color:#0a0f0d;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;font-family:'Syne',sans-serif;transition:all .2s}
+.gen-btn:hover{background:var(--accent2);transform:translateY(-1px)}
+.plan-result{margin-top:1.5rem;display:none}
+.plan-result .plan-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--accent);margin-bottom:1rem}
+.plan-ex{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.plan-ex:last-child{border-bottom:none}
+.plan-num{width:28px;height:28px;border-radius:50%;background:rgba(61,220,132,.15);color:var(--accent);font-size:.8rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.plan-name{flex:1;font-size:.9rem}
+.plan-sets{font-size:.8rem;color:var(--accent);font-weight:500}
+
+/* GUIDED WORKOUT */
+.day-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:1.5rem;scrollbar-width:none}
+.day-tabs::-webkit-scrollbar{display:none}
+.day-tab{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-size:.8rem;cursor:pointer;white-space:nowrap;color:var(--muted);transition:all .2s;font-family:'DM Sans',sans-serif}
+.day-tab:hover{border-color:var(--muted);color:var(--text)}
+.day-tab.sel{background:var(--accent);color:#0a0f0d;border-color:var(--accent);font-weight:600}
+.trainer-banner{background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.3);border-radius:10px;padding:12px 16px;margin-bottom:1.25rem;font-size:.9rem;color:var(--accent3);display:none}
+.trainer-banner.show{display:block}
+.ex-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:10px;transition:all .25s;cursor:default}
+.ex-card.active{border-color:var(--accent);background:rgba(61,220,132,.06)}
+.ex-card .ex-name{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:.25rem}
+.ex-card .ex-desc{font-size:.82rem;color:var(--muted)}
+.ex-card .ex-sets{font-size:.82rem;color:var(--accent);font-weight:500;margin-top:.4rem}
+.ex-card .ex-tip{font-size:.82rem;color:var(--accent3);margin-top:.4rem;display:none}
+.ex-card.active .ex-tip{display:block}
+.workout-ctrls{display:flex;gap:10px;margin-top:1.25rem}
+.wbtn{flex:1;padding:11px;border-radius:8px;font-size:.9rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;border:1px solid var(--border);background:var(--card);color:var(--text)}
+.wbtn:hover{border-color:var(--muted)}
+.wbtn.primary{background:var(--accent);color:#0a0f0d;border-color:var(--accent)}
+.wbtn.primary:hover{background:var(--accent2)}
+
+/* TIMER */
+.timer-layout{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start}
+.timer-face{text-align:center}
+.timer-ring{width:200px;height:200px;border-radius:50%;border:3px solid var(--border);background:var(--card);margin:0 auto 1.25rem;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;transition:border-color .3s}
+.timer-ring.working{border-color:var(--accent);box-shadow:0 0 30px rgba(61,220,132,.15)}
+.timer-ring.resting{border-color:var(--accent3);box-shadow:0 0 30px rgba(245,200,66,.1)}
+.t-phase{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.t-num{font-family:'Syne',sans-serif;font-size:3.5rem;font-weight:800;line-height:1}
+.t-exname{font-size:.8rem;color:var(--muted);margin-top:.25rem}
+.t-msg{font-size:.9rem;color:var(--muted);margin-bottom:1.25rem;min-height:1.4em}
+.timer-btns{display:flex;gap:8px;justify-content:center}
+.queue-list{display:flex;flex-direction:column;gap:6px}
+.q-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;background:var(--card);border:1px solid var(--border);font-size:.85rem;transition:all .2s}
+.q-item.done{opacity:.4;text-decoration:line-through}
+.q-item.current{background:rgba(61,220,132,.1);border-color:var(--accent);color:var(--accent);font-weight:500}
+.q-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0}
+.q-item.current .q-dot{background:var(--accent)}
+
+/* DEMOS */
+.diff-filter{display:flex;gap:8px;margin-bottom:1.5rem}
+.filt{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 16px;font-size:.82rem;cursor:pointer;color:var(--muted);transition:all .2s;font-family:'DM Sans',sans-serif}
+.filt.sel{background:var(--accent);color:#0a0f0d;border-color:var(--accent);font-weight:600}
+.demo-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.demo-head{padding:1.1rem 1.25rem;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .2s}
+.demo-head:hover{background:var(--card2)}
+.d-name{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:600;flex:1}
+.d-badge{font-size:.72rem;padding:3px 10px;border-radius:20px;font-weight:600}
+.b-beg{background:rgba(61,220,132,.15);color:var(--accent)}
+.b-int{background:rgba(240,144,64,.15);color:var(--orange)}
+.d-tog{font-size:1.1rem;color:var(--muted);width:20px;text-align:center}
+.demo-body{display:none;padding:0 1.25rem 1.25rem;border-top:1px solid var(--border)}
+.demo-body.open{display:block}
+.demo-steps{font-size:.85rem;color:var(--muted);line-height:1.8;padding-top:1rem;margin-bottom:.75rem}
+.watch-link{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;color:var(--accent);border:1px solid rgba(61,220,132,.3);border-radius:8px;padding:6px 12px;text-decoration:none;transition:all .2s}
+.watch-link:hover{background:rgba(61,220,132,.1)}
+
+/* DIET */
+.diet-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem}
+.diet-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem}
+.diet-time{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);font-weight:600;margin-bottom:.5rem}
+.diet-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:.75rem}
+.diet-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:.6rem;font-size:.85rem;color:var(--muted)}
+.diet-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:.4em}
+.diet-tip{background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.2);border-radius:8px;padding:.75rem 1rem;margin-top:1rem;font-size:.82rem;color:var(--accent3);line-height:1.6}
+
+/* PROGRESS TRACKER */
+.prog-layout{display:grid;grid-template-columns:1fr 1.5fr;gap:2rem;align-items:start}
+.prog-form .field{margin-bottom:1rem}
+.prog-form label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.4rem;font-weight:500}
+.prog-form input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.prog-form input:focus{border-color:var(--accent)}
+.prog-form select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none}
+.log-btn{width:100%;padding:12px;background:var(--accent);color:#0a0f0d;border:none;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;font-family:'Syne',sans-serif;margin-top:.5rem;transition:all .2s}
+.log-btn:hover{background:var(--accent2)}
+.entries{max-height:320px;overflow-y:auto;margin-bottom:1.25rem}
+.entry-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:.83rem}
+.entry-row:last-child{border-bottom:none}
+.e-date{color:var(--muted);min-width:90px}
+.e-name{flex:1}
+.e-weight{color:var(--accent);font-weight:500;min-width:60px;text-align:right}
+.streak-bar{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem}
+.streak-num{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;color:var(--accent)}
+.streak-label{font-size:.8rem;color:var(--muted);margin-top:.25rem}
+.mini-chart{margin-top:1rem}
+.mini-chart .chart-title{font-size:.8rem;color:var(--muted);margin-bottom:.75rem}
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:80px}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{background:var(--accent);border-radius:4px 4px 0 0;width:100%;min-height:4px;transition:height .4s}
+.bar-lbl{font-size:.65rem;color:var(--muted)}
+
+/* TRAINER FLOW */
+.flow-layout{max-width:700px;margin:0 auto}
+.phase-tabs{display:flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:2rem;background:var(--card)}
+.phase-tab{flex:1;padding:11px;font-size:.85rem;cursor:pointer;text-align:center;color:var(--muted);transition:all .2s;border:none;background:none;font-family:'DM Sans',sans-serif}
+.phase-tab.sel{background:var(--accent);color:#0a0f0d;font-weight:600}
+.flow-step{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:10px;display:flex;gap:1.25rem;align-items:flex-start}
+.step-num{width:36px;height:36px;border-radius:50%;background:rgba(61,220,132,.15);color:var(--accent);font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-name{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:.25rem}
+.step-detail{font-size:.83rem;color:var(--muted);line-height:1.6}
+.step-dur{display:inline-block;background:rgba(61,220,132,.1);color:var(--accent);border-radius:6px;padding:2px 10px;font-size:.75rem;font-weight:500;margin-top:.4rem}
+
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem;text-align:center}
+footer .ft-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:var(--accent);margin-bottom:.5rem}
+footer p{font-size:.82rem;color:var(--muted)}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  .timer-layout,.prog-layout{grid-template-columns:1fr}
+  #plan-section .grid2{grid-template-columns:1fr 1fr}
+  .nav-links a{padding:0 .6rem;font-size:.78rem}
+}
+@media(max-width:480px){
+  #plan-section .grid2{grid-template-columns:1fr}
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.hero-inner>*{animation:fadeUp .6s ease both}
+.hero-inner>*:nth-child(1){animation-delay:.1s}
+.hero-inner>*:nth-child(2){animation-delay:.22s}
+.hero-inner>*:nth-child(3){animation-delay:.34s}
+.hero-inner>*:nth-child(4){animation-delay:.46s}
+.hero-inner>*:nth-child(5){animation-delay:.58s}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Fit<span>Start</span></div>
+  <div class="nav-links">
+    <a href="#plan-section">Plan</a>
+    <a href="#workout-section">Workout</a>
+    <a href="#timer-section">Timer</a>
+    <a href="#demo-section">Demos</a>
+    <a href="#diet-section">Diet</a>
+    <a href="#progress-section">Progress</a>
+    <a href="#trainer-section">Trainer</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-tag">🏋️ Beginner Friendly</div>
+    <h1>Your personal <span class="green">gym trainer</span> starts here</h1>
+    <p>Workouts, timers, diet tips, progress tracking — everything a beginner needs to build a real fitness habit, for free.</p>
+    <div class="hero-btns">
+      <a href="#plan-section" class="btn btn-primary">Build my plan →</a>
+      <a href="#trainer-section" class="btn btn-outline">Start a session</a>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="num">5</div><div class="lbl">Workout days</div></div>
+      <div class="stat"><div class="num">8+</div><div class="lbl">Exercises demoed</div></div>
+      <div class="stat"><div class="num">3</div><div class="lbl">Goals covered</div></div>
+      <div class="stat"><div class="num">0</div><div class="lbl">Equipment needed</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 1. PLAN BUILDER -->
+<section id="plan-section">
+  <div class="section-tag">Step 1</div>
+  <h2 class="section-title">Build your workout plan</h2>
+  <p class="section-sub">Tell us your goal and available time — we'll generate a realistic plan you can actually follow.</p>
+  <div class="card" style="max-width:600px">
+    <p style="font-size:.8rem;color:var(--muted);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.06em;font-weight:500">Your goal</p>
+    <div class="grid2">
+      <div class="goal-card" onclick="selGoal(this,'loss')"><div class="ico">🔥</div><div class="gname">Weight loss</div><div class="gsub">Burn fat, stay active</div></div>
+      <div class="goal-card" onclick="selGoal(this,'muscle')"><div class="ico">💪</div><div class="gname">Muscle gain</div><div class="gsub">Build strength & size</div></div>
+      <div class="goal-card" onclick="selGoal(this,'fit')"><div class="ico">⚡</div><div class="gname">General fitness</div><div class="gsub">Health & endurance</div></div>
+      <div class="goal-card" onclick="selGoal(this,'flex')"><div class="ico">🧘</div><div class="gname">Flexibility</div><div class="gsub">Mobility & recovery</div></div>
+    </div>
+    <p style="font-size:.8rem;color:var(--muted);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.06em;font-weight:500">Time available</p>
+    <div class="time-chips">
+      <button class="chip" onclick="selTime(this,20)">20 min</button>
+      <button class="chip" onclick="selTime(this,30)">30 min</button>
+      <button class="chip" onclick="selTime(this,45)">45 min</button>
+      <button class="chip" onclick="selTime(this,60)">60 min</button>
+    </div>
+    <button class="gen-btn" onclick="generatePlan()">Generate my plan ↓</button>
+    <div class="plan-result" id="plan-result">
+      <div class="plan-title" id="plan-title"></div>
+      <div id="plan-list"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. GUIDED WORKOUT -->
+<section id="workout-section">
+  <div class="section-tag">Step 2</div>
+  <h2 class="section-title">Guided day-by-day workouts</h2>
+  <p class="section-sub">Follow each exercise one by one — like having a trainer in the room with you.</p>
+  <div class="day-tabs" id="day-tabs"></div>
+  <div class="trainer-banner" id="trainer-banner"></div>
+  <div id="ex-list"></div>
+  <div class="workout-ctrls">
+    <button class="wbtn" onclick="prevEx()">← Previous</button>
+    <button class="wbtn primary" onclick="nextEx()">Next exercise →</button>
+  </div>
+</section>
+
+<!-- 3. TIMER -->
+<section id="timer-section">
+  <div class="section-tag">Step 3</div>
+  <h2 class="section-title">Interval workout timer</h2>
+  <p class="section-sub">30 seconds work, 10 seconds rest — the timer guides you through each exercise automatically.</p>
+  <div class="timer-layout">
+    <div class="timer-face">
+      <div class="timer-ring" id="t-ring">
+        <div class="t-phase" id="t-phase">Ready</div>
+        <div class="t-num" id="t-num">30</div>
+        <div class="t-exname" id="t-exname">–</div>
+      </div>
+      <div class="t-msg" id="t-msg">Press Start when you're ready</div>
+      <div class="timer-btns">
+        <button class="btn btn-outline" onclick="resetTimer()" style="padding:10px 20px;font-size:.85rem">Reset</button>
+        <button class="btn btn-primary" id="t-btn" onclick="toggleTimer()" style="padding:10px 24px;font-size:.85rem">Start</button>
+      </div>
+    </div>
+    <div>
+      <p style="font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;font-weight:500">Exercise queue</p>
+      <div class="queue-list" id="t-queue"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. DEMOS -->
+<section id="demo-section">
+  <div class="section-tag">Step 4</div>
+  <h2 class="section-title">Exercise guide & demo links</h2>
+  <p class="section-sub">Step-by-step instructions for every exercise, plus difficulty levels and YouTube demo links.</p>
+  <div class="diff-filter">
+    <button class="filt sel" onclick="filterDemo(this,'all')">All</button>
+    <button class="filt" onclick="filterDemo(this,'Beginner')">Beginner</button>
+    <button class="filt" onclick="filterDemo(this,'Intermediate')">Intermediate</button>
+  </div>
+  <div id="demo-list"></div>
+</section>
+
+<!-- 5. DIET -->
+<section id="diet-section">
+  <div class="section-tag">Step 5</div>
+  <h2 class="section-title">Simple diet + workout combo guide</h2>
+  <p class="section-sub">Realistic, beginner-friendly nutrition tips — no extreme diets, just fuel for your workouts.</p>
+  <div class="diet-grid">
+    <div class="diet-card">
+      <div class="diet-time">☀️ Morning routine</div>
+      <div class="diet-title">Start your day right</div>
+      <div class="diet-item"><div class="diet-dot"></div><span>Drink a glass of water before anything else</span></div>
+      <div class="diet-item"><div class="diet-dot"></div><span>5-minute light stretch or walk</span></div>
+      <div class="diet-item"><div class="diet-dot"></div><span>Eat within 1 hour of waking up</span></div>
+      <div class="diet-item"><div class="diet-dot"></div><span>Include protein: eggs, curd, or peanut butter</span></div>
+      <div class="diet-tip">💡 A simple banana + peanut butter breakfast works great for most beginners.</div>
+    </div>
+    <div class="diet-card">
+      <div class="diet-time">⚡ Pre-workout (30–60 min before)</div>
+      <div class="diet-title">Fuel your session</div>
+      <div class="diet-item"><div class="diet-dot"></div><span>Banana or a small bowl of oats</span></div>
+      <div class="diet-item"><div class="diet-dot"></div><span>Avoid heavy meals — you'll feel sluggish</span></div>
+      <div class="diet-item"><div class="diet-dot"></div><span>Stay hydrated (500ml water minimum)</span></div>
+      <div class="diet-item"><div class="diet-dot"></div><span>Optional: black coffee for an energy boost</span></div>
+      <div class="diet-tip">💡 Don't work out on a completely empty stomach — even a banana is enough.</div>
+    </div>
+    <div class="diet-card">
+      <div class="diet-time">🥗 Post-workout (within 30–60 min)</div>
+      <div class="diet-title">Recover & rebuild</div>
+      <div class="diet-item"><div class="diet-dot"></div><span>Protein is key: eggs, chicken, dal, paneer</span></div>
+      <div class="diet-item"><div class="diet-dot"></div><span>Include carbs: rice, roti, or sweet potato</span></div>
+      <div class="diet-item"><div class="diet-dot"></div><span>Rehydrate with water or coconut water</span></div>
+      <div class="diet-item"><div class="diet-dot"></div><span>Avoid junk food — your muscles need real nutrients</span></div>
+      <div class="diet-tip">💡 This is the most important meal of your day. Don't skip it.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. PROGRESS TRACKER -->
+<section id="progress-section">
+  <div class="section-tag">Step 6</div>
+  <h2 class="section-title">Progress tracker</h2>
+  <p class="section-sub">Log your weight and workouts. Watch your streak grow and see your progress over time.</p>
+  <div class="prog-layout">
+    <div class="prog-form card">
+      <p style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1rem">Log today's entry</p>
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="log-date">
+      </div>
+      <div class="field">
+        <label>Weight (kg)</label>
+        <input type="number" id="log-weight" placeholder="e.g. 68.5" step="0.1">
+      </div>
+      <div class="field">
+        <label>Workout completed</label>
+        <select id="log-workout">
+          <option value="">Select workout…</option>
+          <option>Day 1: Chest</option>
+          <option>Day 2: Legs</option>
+          <option>Day 3: Back</option>
+          <option>Day 4: Arms</option>
+          <option>Day 5: Core</option>
+          <option>Rest day</option>
+        </select>
+      </div>
+      <button class="log-btn" onclick="logEntry()">Log entry ✓</button>
+    </div>
+    <div>
+      <div class="streak-bar">
+        <div class="streak-num" id="streak-num">0</div>
+        <div class="streak-label">day streak 🔥 keep going!</div>
+      </div>
+      <div class="card" style="margin-bottom:1.25rem">
+        <div style="font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;font-weight:500">Recent entries</div>
+        <div class="entries" id="entries"><p style="font-size:.85rem;color:var(--muted)">No entries yet. Log your first workout!</p></div>
+      </div>
+      <div class="card mini-chart">
+        <div class="chart-title">Weight trend (last 7 logs)</div>
+        <div class="chart-bars" id="chart-bars">
+          <div style="font-size:.8rem;color:var(--muted)">Log entries to see your chart</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. TRAINER FLOW -->
+<section id="trainer-section">
+  <div class="section-tag">Step 7</div>
+  <h2 class="section-title">Gym trainer: step-by-step</h2>
+  <p class="section-sub">Follow your trainer through a complete session — warm-up, workout, cool-down — just like the real thing.</p>
+  <div class="flow-layout">
+    <div class="phase-tabs">
+      <button class="phase-tab sel" onclick="showPhase(this,'warmup')">Page 1: Warm-up</button>
+      <button class="phase-tab" onclick="showPhase(this,'workout')">Page 2: Workout</button>
+      <button class="phase-tab" onclick="showPhase(this,'cooldown')">Page 3: Cool down</button>
+    </div>
+    <div id="flow-steps"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="ft-logo">FitStart</div>
+  <p>Built for beginners. No gym required. Just show up.</p>
+</footer>
+
+<script>
+// DATA
+const DAYS=[
+  {name:'Day 1: Chest',exs:[
+    {n:'Push-ups',d:'Classic chest & tricep compound movement',s:'3 × 12 reps',tip:'Keep core tight, lower slowly in 2 counts'},
+    {n:'Incline Push-ups',d:'Upper chest focus using a chair or wall',s:'3 × 10 reps',tip:'Elevate hands, keep body straight as a plank'},
+    {n:'Chest Squeeze Hold',d:'Isometric hold for muscle activation',s:'3 × 30 sec',tip:'Press palms together firmly, feel the squeeze'},
+  ]},
+  {name:'Day 2: Legs',exs:[
+    {n:'Bodyweight Squats',d:'Quad, glute & hamstring compound',s:'4 × 15 reps',tip:'Feet shoulder-width, drive through heels'},
+    {n:'Lunges',d:'Single-leg strength and balance',s:'3 × 10 each leg',tip:'Keep front knee behind your toes'},
+    {n:'Glute Bridges',d:'Posterior chain activation',s:'3 × 15 reps',tip:'Squeeze glutes hard at the top for 1 second'},
+    {n:'Calf Raises',d:'Standing, use a step for full range',s:'3 × 20 reps',tip:'Go slow on the way down for max benefit'},
+  ]},
+  {name:'Day 3: Back',exs:[
+    {n:'Superman Hold',d:'Lower back and posterior chain strengthener',s:'3 × 12 reps',tip:'Lift arms & legs simultaneously, hold 2 sec at top'},
+    {n:'Bent-over Row',d:'Use a water bottle, bag, or any weight',s:'3 × 12 reps',tip:'Hinge at hips, pull your elbow to your hip'},
+    {n:'Reverse Snow Angel',d:'Rear delt and upper back',s:'3 × 15 reps',tip:'Lie face down, sweep arms wide and back'},
+  ]},
+  {name:'Day 4: Arms',exs:[
+    {n:'Tricep Dips',d:'Use a sturdy chair or low surface',s:'3 × 12 reps',tip:'Elbows point back — never flare them wide'},
+    {n:'Bicep Curls',d:'Use any household weight you can lift',s:'3 × 12 reps',tip:'Squeeze at the top, resist on the way down'},
+    {n:'Diamond Push-ups',d:'Narrow grip for tricep focus',s:'3 × 8 reps',tip:'Thumbs & index fingers touching in a diamond'},
+  ]},
+  {name:'Day 5: Core',exs:[
+    {n:'Plank',d:'Full core isometric stability hold',s:'3 × 45 sec',tip:'Hips level — don\'t sag or pike up'},
+    {n:'Crunches',d:'Upper abdominal activation',s:'3 × 20 reps',tip:'Exhale on the way up, don\'t pull your neck'},
+    {n:'Leg Raises',d:'Lower ab focused movement',s:'3 × 12 reps',tip:'Press lower back into the floor throughout'},
+    {n:'Russian Twists',d:'Oblique rotational movement',s:'3 × 16 reps',tip:'Lift feet off floor for an extra challenge'},
+  ]},
+];
+
+const PLANS={
+  loss:{label:'Weight Loss Plan',exs:['Jumping Jacks — 3 × 30 sec','Bodyweight Squats — 4 × 15','Push-ups — 3 × 12','Mountain Climbers — 3 × 30 sec','Plank — 3 × 40 sec','Lunges — 3 × 10 each leg']},
+  muscle:{label:'Muscle Gain Plan',exs:['Push-ups — 4 × 15','Diamond Push-ups — 3 × 10','Squats — 4 × 12','Glute Bridges — 3 × 15','Tricep Dips — 3 × 12','Bent-over Rows — 3 × 12']},
+  fit:{label:'General Fitness Plan',exs:['Warm-up jog in place — 3 min','Push-ups — 3 × 12','Squats — 3 × 15','Plank — 3 × 30 sec','Lunges — 3 × 10','Jumping Jacks — 3 × 20']},
+  flex:{label:'Flexibility Plan',exs:['Cat-Cow stretch — 2 min','Hip flexor lunge hold — 60 sec each','Seated hamstring stretch — 60 sec','Shoulder crossbody stretch — 45 sec each','Child\'s pose — 90 sec','Spinal twist — 60 sec each side']},
+};
+
+const DEMOS=[
+  {n:'Push-ups',level:'Beginner',steps:'Start in a high plank position. Lower your chest to the floor over 2 counts. Push explosively back up in 1 count. Keep your core braced the entire time — don\'t let hips sag.',link:'https://www.youtube.com/results?search_query=push+ups+form+beginner'},
+  {n:'Bodyweight Squats',level:'Beginner',steps:'Stand feet shoulder-width, toes slightly out. Sit back and down as if reaching for a chair. Go until thighs are at least parallel to the floor. Drive through your heels to stand tall.',link:'https://www.youtube.com/results?search_query=squat+form+beginner'},
+  {n:'Plank',level:'Beginner',steps:'Place forearms flat on the floor, elbows directly under shoulders. Hold your body in a rigid straight line from head to heels. Breathe steadily. Don\'t hold your breath.',link:'https://www.youtube.com/results?search_query=plank+exercise+beginner'},
+  {n:'Lunges',level:'Beginner',steps:'Step one foot forward. Lower the back knee toward the floor, stopping just above it. Front knee stays behind toes. Push off the front foot to return to standing. Alternate legs.',link:'https://www.youtube.com/results?search_query=lunges+beginner+form'},
+  {n:'Glute Bridges',level:'Beginner',steps:'Lie on your back with knees bent, feet flat on the floor. Press your hips up until your body forms a straight line from knees to shoulders. Squeeze glutes hard at the top, then lower slowly.',link:'https://www.youtube.com/results?search_query=glute+bridge+form'},
+  {n:'Tricep Dips',level:'Intermediate',steps:'Grip the edge of a sturdy chair with hands behind you. Slide your hips off the seat. Lower your body until elbows reach 90°. Press back up without shrugging your shoulders up to your ears.',link:'https://www.youtube.com/results?search_query=tricep+dips+chair'},
+  {n:'Diamond Push-ups',level:'Intermediate',steps:'Place hands together directly under your chest, forming a diamond shape with thumbs and index fingers. Lower your chest to your hands, keeping elbows tight to the body. Push back up.',link:'https://www.youtube.com/results?search_query=diamond+push+ups+form'},
+  {n:'Russian Twists',level:'Intermediate',steps:'Sit at a 45° angle with knees bent. Optionally lift feet off the floor. Rotate your torso fully left and touch the floor, then rotate right. Keep your spine long throughout.',link:'https://www.youtube.com/results?search_query=russian+twists+core+exercise'},
+];
+
+const PHASES={
+  warmup:[
+    {n:'March in place',detail:'Lift your knees high, pump your arms. Get the blood flowing before anything else.',dur:'2 min'},
+    {n:'Arm circles',detail:'Forward 15 reps, then backward 15 reps. Open up the shoulder joint gently.',dur:'1 min'},
+    {n:'Leg swings',detail:'Hold a wall for balance. Swing each leg forward and back 10 times to loosen hips.',dur:'1 min'},
+    {n:'Torso rotations',detail:'Hands on hips, rotate your upper body side to side. Warm up the spine.',dur:'1 min'},
+    {n:'Light jumping jacks',detail:'Nice and easy — not max effort. Just elevate heart rate gently.',dur:'2 min'},
+  ],
+  workout:[
+    {n:'Push-ups',detail:'3 sets × 12 reps. Rest 60 seconds between sets. Focus on form over speed.',dur:'~5 min'},
+    {n:'Bodyweight squats',detail:'4 sets × 15 reps. Keep chest up, push through heels. Rest 60–90 sec.',dur:'~7 min'},
+    {n:'Plank hold',detail:'3 sets × 40 seconds. Strict form — no sagging. Rest 45 sec between sets.',dur:'~4 min'},
+    {n:'Lunges',detail:'3 sets × 10 each leg. Controlled movement, no rushing. Rest 60 sec.',dur:'~5 min'},
+    {n:'Glute bridges',detail:'3 sets × 15 reps. Squeeze at the top every rep. Rest 45 sec.',dur:'~4 min'},
+  ],
+  cooldown:[
+    {n:'Child\'s pose',detail:'Kneel and reach arms forward, letting your chest melt toward the floor. Breathe deeply.',dur:'90 sec'},
+    {n:'Seated hamstring stretch',detail:'Legs straight, reach toward your toes. Hold the stretch — don\'t bounce.',dur:'60 sec each'},
+    {n:'Hip flexor stretch',detail:'Lunge position, back knee on the floor. Lean forward gently to stretch the hip.',dur:'60 sec each'},
+    {n:'Chest opener',detail:'Clasp hands behind your back, squeeze shoulder blades together, lift chest up.',dur:'45 sec'},
+    {n:'Spinal twist',detail:'Lie on your back, bring one knee across the body while keeping shoulders flat.',dur:'60 sec each'},
+  ],
+};
+
+const TIMER_EX=['Squats','Push-ups','Plank','Lunges','Mountain Climbers'];
+const WORK=30,REST=10;
+
+let goal=null,time=null,curDay=0,curEx=0;
+let tInt=null,tPhase='work',tSec=WORK,tIdx=0,tRunning=false;
+let entries=[];
+
+// PLAN BUILDER
+function selGoal(el,g){document.querySelectorAll('.goal-card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');goal=g;}
+function selTime(el,t){document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');time=t;}
+function generatePlan(){
+  if(!goal){alert('Please choose a goal first.');return;}
+  if(!time){alert('Please choose a time first.');return;}
+  const p=PLANS[goal];
+  const cnt=time<=20?4:time<=30?5:6;
+  const exs=p.exs.slice(0,cnt);
+  document.getElementById('plan-title').textContent=`${p.label} — ${time} minutes`;
+  document.getElementById('plan-list').innerHTML=exs.map((e,i)=>`<div class="plan-ex"><div class="plan-num">${i+1}</div><div class="plan-name">${e.split('—')[0].trim()}</div><div class="plan-sets">${(e.split('—')[1]||'').trim()}</div></div>`).join('');
+  const r=document.getElementById('plan-result');r.style.display='block';
+}
+
+// GUIDED WORKOUT
+function initWorkout(){
+  document.getElementById('day-tabs').innerHTML=DAYS.map((d,i)=>`<button class="day-tab${i===0?' sel':''}" onclick="selDay(this,${i})">${d.name}</button>`).join('');
+  renderExList();
+}
+function selDay(el,i){
+  document.querySelectorAll('.day-tab').forEach(t=>t.classList.remove('sel'));el.classList.add('sel');
+  curDay=i;curEx=0;renderExList();
+}
+function renderExList(){
+  const day=DAYS[curDay];
+  document.getElementById('ex-list').innerHTML=day.exs.map((e,i)=>`<div class="ex-card${i===curEx?' active':''}" id="exc-${i}"><div class="ex-name">${e.n}</div><div class="ex-desc">${e.d}</div><div class="ex-sets">${e.s}</div><div class="ex-tip">💡 Trainer tip: ${e.tip}</div></div>`).join('');
+  const b=document.getElementById('trainer-banner');
+  b.textContent=`"Now up: ${day.exs[curEx].n} — ${day.exs[curEx].tip}"`;
+  b.classList.add('show');
+}
+function nextEx(){
+  const day=DAYS[curDay];
+  if(curEx<day.exs.length-1){curEx++;renderExList();}
+  else{const b=document.getElementById('trainer-banner');b.textContent='"Great work! You\'ve finished today\'s workout. Rest and recover!"';b.classList.add('show');document.querySelectorAll('.ex-card').forEach(c=>c.classList.remove('active'));}
+}
+function prevEx(){if(curEx>0){curEx--;renderExList();}}
+
+// TIMER
+function renderQueue(){
+  document.getElementById('t-queue').innerHTML=TIMER_EX.map((e,i)=>`<div class="q-item${i===tIdx?' current':i<tIdx?' done':''}" id="qi-${i}"><div class="q-dot"></div><span>${e}</span></div>`).join('');
+  document.getElementById('t-exname').textContent=TIMER_EX[tIdx]||'–';
+}
+function toggleTimer(){
+  if(tRunning){clearInterval(tInt);tRunning=false;document.getElementById('t-btn').textContent='Resume';}
+  else{tRunning=true;document.getElementById('t-btn').textContent='Pause';tInt=setInterval(tick,1000);}
+}
+function tick(){
+  tSec--;
+  if(tSec<0){
+    if(tPhase==='work'){tPhase='rest';tSec=REST;document.getElementById('t-phase').textContent='Rest';document.getElementById('t-msg').textContent='Catch your breath...';document.getElementById('t-ring').className='timer-ring resting';}
+    else{
+      tIdx++;
+      if(tIdx>=TIMER_EX.length){clearInterval(tInt);tRunning=false;document.getElementById('t-phase').textContent='Done!';document.getElementById('t-num').textContent='🎉';document.getElementById('t-msg').textContent='Workout complete — amazing work!';document.getElementById('t-btn').textContent='Start';tIdx=0;renderQueue();return;}
+      tPhase='work';tSec=WORK;
+      document.getElementById('t-phase').textContent='Work';
+      document.getElementById('t-msg').textContent=`Go! ${TIMER_EX[tIdx]}`;
+      document.getElementById('t-ring').className='timer-ring working';
+      renderQueue();
+    }
+  }
+  document.getElementById('t-num').textContent=tSec;
+}
+function resetTimer(){
+  clearInterval(tInt);tRunning=false;tPhase='work';tSec=WORK;tIdx=0;
+  document.getElementById('t-phase').textContent='Ready';
+  document.getElementById('t-num').textContent=WORK;
+  document.getElementById('t-msg').textContent='Press Start when you\'re ready';
+  document.getElementById('t-btn').textContent='Start';
+  document.getElementById('t-ring').className='timer-ring';
+  renderQueue();
+}
+
+// DEMOS
+function renderDemos(filter){
+  const items=filter==='all'?DEMOS:DEMOS.filter(d=>d.level===filter);
+  document.getElementById('demo-list').innerHTML=items.map((d,i)=>`<div class="demo-card"><div class="demo-head" onclick="toggleDemo('dd-${i}','dt-${i}')"><div class="d-name">${d.n}</div><span class="d-badge ${d.level==='Beginner'?'b-beg':'b-int'}">${d.level}</span><div class="d-tog" id="dt-${i}">+</div></div><div class="demo-body" id="dd-${i}"><div class="demo-steps">${d.steps}</div><a class="watch-link" href="${d.link}" target="_blank">▶ Watch demo video</a></div></div>`).join('');
+}
+function toggleDemo(bid,tid){
+  const b=document.getElementById(bid),t=document.getElementById(tid);
+  const o=b.classList.toggle('open');t.textContent=o?'−':'+';
+}
+function filterDemo(el,f){
+  document.querySelectorAll('.filt').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');renderDemos(f);
+}
+
+// PROGRESS
+function logEntry(){
+  const date=document.getElementById('log-date').value;
+  const weight=parseFloat(document.getElementById('log-weight').value);
+  const workout=document.getElementById('log-workout').value;
+  if(!date||!workout){alert('Please fill in date and workout.');return;}
+  entries.unshift({date,weight:isNaN(weight)?null:weight,workout});
+  renderEntries();
+  document.getElementById('log-weight').value='';
+  document.getElementById('log-workout').value='';
+}
+function renderEntries(){
+  const el=document.getElementById('entries');
+  if(!entries.length){el.innerHTML='<p style="font-size:.85rem;color:var(--muted)">No entries yet.</p>';return;}
+  el.innerHTML=entries.slice(0,10).map(e=>`<div class="entry-row"><div class="e-date">${e.date}</div><div class="e-name">${e.workout}</div><div class="e-weight">${e.weight!=null?e.weight+'kg':'—'}</div></div>`).join('');
+  updateStreak();
+  updateChart();
+}
+function updateStreak(){
+  let streak=0;
+  const today=new Date();
+  for(let i=0;i<entries.length;i++){
+    const d=new Date(entries[i].date);
+    const diff=Math.round((today-d)/(1000*60*60*24));
+    if(diff===i)streak++;else break;
+  }
+  document.getElementById('streak-num').textContent=streak;
+}
+function updateChart(){
+  const weights=entries.filter(e=>e.weight!=null).slice(0,7).reverse();
+  if(!weights.length){document.getElementById('chart-bars').innerHTML='<div style="font-size:.8rem;color:var(--muted)">Log weight entries to see chart</div>';return;}
+  const max=Math.max(...weights.map(e=>e.weight));
+  const min=Math.min(...weights.map(e=>e.weight));
+  const range=max-min||1;
+  document.getElementById('chart-bars').innerHTML=weights.map(e=>{
+    const h=Math.round(20+((e.weight-min)/range)*56);
+    return`<div class="bar-wrap"><div class="bar" style="height:${h}px"></div><div class="bar-lbl">${e.weight}</div></div>`;
+  }).join('');
+}
+
+// TRAINER FLOW
+function showPhase(el,phase){
+  document.querySelectorAll('.phase-tab').forEach(t=>t.classList.remove('sel'));el.classList.add('sel');
+  const steps=PHASES[phase];
+  document.getElementById('flow-steps').innerHTML=steps.map((s,i)=>`<div class="flow-step"><div class="step-num">${i+1}</div><div><div class="step-name">${s.n}</div><div class="step-detail">${s.detail}</div><span class="step-dur">⏱ ${s.dur}</span></div></div>`).join('');
+}
+
+// NAV active on scroll
+const sectionIds=['plan-section','workout-section','timer-section','demo-section','diet-section','progress-section','trainer-section'];
+const navLinks=document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll',()=>{
+  const scrollY=window.scrollY+120;
+  let cur='';
+  sectionIds.forEach(id=>{const el=document.getElementById(id);if(el&&el.offsetTop<=scrollY)cur=id;});
+  navLinks.forEach(a=>{a.classList.toggle('active',a.getAttribute('href')==='#'+cur);});
+});
+
+// INIT
+document.getElementById('log-date').valueAsDate=new Date();
+initWorkout();
+renderQueue();
+renderDemos('all');
+showPhase(document.querySelector('.phase-tab.sel'),'warmup');
+</script>
+</body>
+</html>
